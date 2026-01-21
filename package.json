@@ -4,5 +4,24 @@
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "mysql2": "^3.16.0"
-  }
+  },
+  "name": "1_hospital_project",
+  "version": "1.0.0",
+  "description": "\"# 1_hospital_project\" \r \"# 1_hospital_project\"",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pratikpathare-hash/1_hospital_project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pratikpathare-hash/1_hospital_project/issues"
+  },
+  "homepage": "https://github.com/pratikpathare-hash/1_hospital_project#readme"
 }
