@@ -1,0 +1,93 @@
+<!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h3 class="mb-4"><i class="fas fa-hospital me-2"></i>Medi<span>nova</span></h3>
+                    <p>Providing exceptional healthcare services with compassion, innovation, and excellence since 1998. Your health is our priority.</p>
+                    <div class="mt-4">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <div class="footer-links">
+                        <a href="#">Home</a>
+                        <a href="#services">Services</a>
+                        <a href="#about">About Us</a>
+                        <a href="#doctors">Doctors</a>
+                        <a href="#blog">Blog</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="mb-4">Our Services</h5>
+                    <div class="footer-links">
+                        <a href="#">Cardiology</a>
+                        <a href="#">Neurology</a>
+                        <a href="#">Orthopedics</a>
+                        <a href="#">Pediatrics</a>
+                        <a href="#">Ophthalmology</a>
+                        <a href="#">Primary Care</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="mb-4">Contact Us</h5>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Medical Street, Health City, HC 12345</p>
+                    <p><i class="fas fa-phone me-2"></i> (123) 456-7890</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@medinova.com</p>
+                    <p><i class="fas fa-clock me-2"></i> Mon-Sun: 24/7 Emergency</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Medinova Hospital. All Rights Reserved. | Designed for Best Healthcare Solutions</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Form submission handler
+        document.querySelector('form')?.addEventListener('submit', function(e) {
+            alert('Thank you! Your appointment request has been submitted. We will contact you shortly.');
+           
+        });
+    </script>
+    <script>
+$(document).ready(function () {
+  $('.counter').counterUp({
+    delay: 10,
+    time: 1500
+  });
+});
+</script>
+
+</body>
+</html>

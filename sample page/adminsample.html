@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Admin Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #1a76d1;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 70px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color) 0%, #0d4d9c 100%);
+            color: white;
+            transition: all 0.3s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-collapsed #sidebar {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .sidebar-header .hospital-name {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        #sidebar .list-group-item {
+            background-color: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            border-left: 4px solid transparent;
+            margin-bottom: 2px;
+            transition: all 0.3s;
+        }
+        
+        #sidebar .list-group-item:hover,
+        #sidebar .list-group-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: white;
+        }
+        
+        #sidebar .list-group-item i {
+            width: 25px;
+            text-align: center;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar-collapsed #sidebar .list-group-item span {
+            display: none;
+        }
+        
+        .sidebar-collapsed #sidebar .list-group-item i {
+            margin-right: 0;
+            font-size: 1.4rem;
+        }
+        
+        /* Main Content */
+        #content {
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+        
+        .sidebar-collapsed #content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        
+        .navbar-custom {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 15px 20px;
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            border-radius: 12px;
+            border: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .stats-card .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        
+        .stats-card.patients .card-icon {
+            background-color: rgba(26, 118, 209, 0.15);
+            color: var(--primary-color);
+        }
+        
+        .stats-card.doctors .card-icon {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--secondary-color);
+        }
+        
+        .stats-card.appointments .card-icon {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--warning-color);
+        }
+        
+        .stats-card.revenue .card-icon {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger-color);
+        }
+        
+        .stats-card.beds .card-icon {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--info-color);
+        }
+        
+        .stats-card.emergency .card-icon {
+            background-color: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+        }
+        
+        /* Charts */
+        .chart-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+        
+        /* Activity Timeline */
+        .activity-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 3px solid white;
+            z-index: 1;
+        }
+        
+        .timeline-item.appointment::before {
+            background-color: var(--warning-color);
+        }
+        
+        .timeline-item.emergency::before {
+            background-color: var(--danger-color);
+        }
+        
+        .timeline-item.lab::before {
+            background-color: var(--info-color);
+        }
+        
+        .timeline-item.prescription::before {
+            background-color: var(--secondary-color);
+        }
+        
+        /* DataTables Customization */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            padding: 15px;
+        }
+        
+        /* Calendar */
+        #calendar {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Department Distribution Chart */
+        .department-chart-container {
+            position: relative;
+            height: 250px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: -var(--sidebar-width);
+            }
+            
+            #content {
+                margin-left: 0 !important;
+            }
+            
+            .sidebar-collapsed #sidebar {
+                margin-left: 0;
+                width: var(--sidebar-width);
+            }
+            
+            .sidebar-collapsed #content {
+                margin-left: 0 !important;
+            }
+            
+            .mobile-menu-btn {
+                display: block !important;
+            }
+        }
+        
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        /* Custom badges */
+        .badge-admission {
+            background-color: rgba(26, 118, 209, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .badge-discharge {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .badge-emergency {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .badge-surgery {
+            background-color: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+        }
+        
+        /* Department Stats */
+        .department-stat-card {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .department-stat-card.cardiology {
+            border-left-color: #ef4444;
+        }
+        
+        .department-stat-card.neurology {
+            border-left-color: #3b82f6;
+        }
+        
+        .department-stat-card.pediatrics {
+            border-left-color: #f59e0b;
+        }
+        
+        .department-stat-card.orthopedics {
+            border-left-color: #a855f7;
+        }
+        
+        /* Revenue Chart */
+        .revenue-chart-container {
+            position: relative;
+            height: 250px;
+        }
+        
+        /* Doctor Availability */
+        .doctor-availability {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .doctor-available {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .doctor-busy {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .doctor-off {
+            background-color: rgba(107, 114, 128, 0.1);
+            border-left: 4px solid #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-hospital me-2"></i> MediCare</h3>
+            <div class="hospital-name">Central Hospital Admin</div>
+        </div>
+        
+        <div class="list-group list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action active">
+                <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-injured"></i> <span>Patients</span>
+                <span class="badge bg-danger float-end mt-1">24</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-md"></i> <span>Doctors</span>
+                <span class="badge bg-success float-end mt-1">12</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-calendar-check"></i> <span>Appointments</span>
+                <span class="badge bg-warning float-end mt-1">42</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-procedures"></i> <span>Departments</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-bed"></i> <span>Ward Management</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-file-medical"></i> <span>Medical Records</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-pills"></i> <span>Pharmacy</span>
+                <span class="badge bg-info float-end mt-1">8</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-dollar-sign"></i> <span>Billing</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-ambulance"></i> <span>Emergency</span>
+                <span class="badge bg-danger float-end mt-1">3</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-chart-bar"></i> <span>Reports</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <i class="fas fa-cog"></i> <span>Settings</span>
+            </a>
+        </div>
+        
+        <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-25">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" 
+                         class="rounded-circle" width="40" alt="Admin">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h6 class="mb-0">Dr. Admin User</h6>
+                    <small class="text-white-50">Hospital Administrator</small>
+                </div>
+                <a href="#" class="text-white" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+                <button class="mobile-menu-btn" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="d-flex align-items-center">
+                    <div class="input-group search-box" style="width: 300px;">
+                        <span class="input-group-text bg-transparent border-end-0">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" placeholder="Search patients, doctors, records...">
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <a href="#" class="position-relative" id="notificationDropdown" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell fs-5 text-muted"></i>
+                            <span class="notification-badge">5</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-2" style="width: 300px;">
+                            <li><h6 class="dropdown-header">Notifications</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user-plus text-primary me-2"></i> New patient registration</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-plus text-warning me-2"></i> Appointment reminder</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-exclamation-triangle text-danger me-2"></i> Emergency case reported</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-pills text-info me-2"></i> Low stock alert</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" 
+                           id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="me-2 d-none d-md-block text-end">
+                                <div class="fw-semibold">Dr. Admin User</div>
+                                <small class="text-muted">Administrator</small>
+                            </div>
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" 
+                                 alt="Admin" width="40" class="rounded-circle">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Dashboard Content -->
+        <div class="container-fluid py-3">
+            <!-- Page Title -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold">Dashboard</h2>
+                    <p class="text-muted mb-0">Welcome back, Dr. Admin. Here's what's happening with your hospital today.</p>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-primary me-2" id="refreshDashboard">
+                        <i class="fas fa-sync-alt me-2"></i> Refresh
+                    </button>
+                    <button class="btn btn-outline-primary" id="generateReport">
+                        <i class="fas fa-file-pdf me-2"></i> Generate Report
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card stats-card patients shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted mb-1">Total Patients</h6>
+                                    <h3 class="fw-bold" id="totalPatients">1,248</h3>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">
+                                        <i class="fas fa-arrow-up me-1"></i> 12.5%
+                                    </span>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-user-injured"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0"><small>24 new today</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card stats-card doctors shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted mb-1">Active Doctors</h6>
+                                    <h3 class="fw-bold" id="activeDoctors">86</h3>
+                                    <span class="badge bg-success bg-opacity-10 text-success">
+                                        <i class="fas fa-arrow-up me-1"></i> 5.2%
+                                    </span>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0"><small>3 on leave</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card stats-card appointments shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted mb-1">Today's Appointments</h6>
+                                    <h3 class="fw-bold" id="todayAppointments">42</h3>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">
+                                        <i class="fas fa-clock me-1"></i> 8 pending
+                                    </span>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0"><small>Next: Dr. Smith (10:30 AM)</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card stats-card revenue shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted mb-1">Monthly Revenue</h6>
+                                    <h3 class="fw-bold" id="monthlyRevenue">$124,580</h3>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger">
+                                        <i class="fas fa-arrow-up me-1"></i> 8.5%
+                                    </span>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0"><small>+$9,750 this week</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card stats-card beds shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted mb-1">Bed Occupancy</h6>
+                                    <h3 class="fw-bold" id="bedOccupancy">78%</h3>
+                                    <span class="badge bg-info bg-opacity-10 text-info">
+                                        <i class="fas fa-bed me-1"></i> 42 available
+                                    </span>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-bed"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0"><small>ICU: 92% occupied</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card stats-card emergency shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted mb-1">Emergency Cases</h6>
+                                    <h3 class="fw-bold" id="emergencyCases">3</h3>
+                                    <span class="badge bg-purple bg-opacity-10 text-purple">
+                                        <i class="fas fa-ambulance me-1"></i> Active
+                                    </span>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-ambulance"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0"><small>1 critical, 2 stable</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts & Activity Section -->
+            <div class="row g-4 mb-4">
+                <!-- Department Distribution Chart -->
+                <div class="col-xl-8">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Department Wise Patient Distribution</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-sm active" data-chart-type="doughnut">Doughnut</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-chart-type="bar">Bar</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-chart-type="pie">Pie</button>
+                            </div>
+                        </div>
+                        <div class="department-chart-container">
+                            <canvas id="departmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="col-xl-4">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Recent Activity</h5>
+                            <a href="#" class="text-primary text-decoration-none small">View All</a>
+                        </div>
+                        
+                        <div class="activity-timeline">
+                            <div class="timeline-item appointment">
+                                <h6 class="fw-bold">New Appointment</h6>
+                                <p class="text-muted mb-1">Dr. Williams with Michael Brown (2:00 PM)</p>
+                                <small class="text-muted"><i class="far fa-clock me-1"></i> 10:45 AM</small>
+                            </div>
+                            
+                            <div class="timeline-item emergency">
+                                <h6 class="fw-bold">Emergency Case</h6>
+                                <p class="text-muted mb-1">Robert Johnson admitted to ICU</p>
+                                <small class="text-muted"><i class="far fa-clock me-1"></i> 09:30 AM</small>
+                            </div>
+                            
+                            <div class="timeline-item lab">
+                                <h6 class="fw-bold">Lab Test Completed</h6>
+                                <p class="text-muted mb-1">Blood test results for Sarah Smith</p>
+                                <small class="text-muted"><i class="far fa-clock me-1"></i> 08:15 AM</small>
+                            </div>
+                            
+                            <div class="timeline-item prescription">
+                                <h6 class="fw-bold">Prescription Issued</h6>
+                                <p class="text-muted mb-1">Dr. Anderson prescribed medication for John Doe</p>
+                                <small class="text-muted"><i class="far fa-clock me-1"></i> 07:45 AM</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Revenue Chart & Doctor Availability Section -->
+            <div class="row g-4 mb-4">
+                <!-- Revenue Trend Chart -->
+                <div class="col-xl-6">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Revenue Trend (Last 6 Months)</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-sm active" data-revenue-period="monthly">Monthly</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-revenue-period="quarterly">Quarterly</button>
+                            </div>
+                        </div>
+                        <div class="revenue-chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Doctor Availability -->
+                <div class="col-xl-6">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Doctor Availability Today</h5>
+                            <a href="#" class="text-primary text-decoration-none small">View Schedule</a>
+                        </div>
+                        
+                        <div class="doctor-availability doctor-available">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">Dr. Sarah Johnson</h6>
+                                    <p class="text-muted mb-0"><small>Cardiologist | Available</small></p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">Available</span>
+                                    <p class="text-muted mb-0 mt-1"><small>Next: 11:30 AM</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="doctor-availability doctor-busy">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">Dr. Michael Chen</h6>
+                                    <p class="text-muted mb-0"><small>Neurologist | In Surgery</small></p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-warning">Busy</span>
+                                    <p class="text-muted mb-0 mt-1"><small>Until: 12:00 PM</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="doctor-availability doctor-available">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">Dr. Robert Williams</h6>
+                                    <p class="text-muted mb-0"><small>Pediatrician | Available</small></p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">Available</span>
+                                    <p class="text-muted mb-0 mt-1"><small>Next: 10:45 AM</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="doctor-availability doctor-off">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">Dr. Emily Davis</h6>
+                                    <p class="text-muted mb-0"><small>Orthopedic Surgeon | Off Duty</small></p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-secondary">Off Duty</span>
+                                    <p class="text-muted mb-0 mt-1"><small>Returns: Tomorrow</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6 class="fw-bold mb-3">Department Statistics</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="department-stat-card cardiology mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Cardiology</h6>
+                                                <p class="text-muted mb-1"><small>42 Patients | 8 Doctors</small></p>
+                                            </div>
+                                            <div class="text-end">
+                                                <h5 class="fw-bold text-danger mb-0">85%</h5>
+                                                <small class="text-muted">Occupancy</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="department-stat-card pediatrics mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Pediatrics</h6>
+                                                <p class="text-muted mb-1"><small>35 Patients | 7 Doctors</small></p>
+                                            </div>
+                                            <div class="text-end">
+                                                <h5 class="fw-bold text-warning mb-0">68%</h5>
+                                                <small class="text-muted">Occupancy</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Calendar Section -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+            
+            <!-- Recent Patients Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Recent Patients</h5>
+                            <a href="#" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i> Add New Patient
+                            </a>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="patientsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Department</th>
+                                        <th>Admission Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#P-1001</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=1a76d1&color=fff" 
+                                                     class="rounded-circle me-2" width="30" alt="John Doe">
+                                                John Doe
+                                            </div>
+                                        </td>
+                                        <td>45</td>
+                                        <td>Male</td>
+                                        <td>Cardiology</td>
+                                        <td>2023-10-15</td>
+                                        <td><span class="badge badge-admission">Under Treatment</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#P-1002</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://ui-avatars.com/api/?name=Sarah+Smith&background=10b981&color=fff" 
+                                                     class="rounded-circle me-2" width="30" alt="Sarah Smith">
+                                                Sarah Smith
+                                            </div>
+                                        </td>
+                                        <td>32</td>
+                                        <td>Female</td>
+                                        <td>Pediatrics</td>
+                                        <td>2023-10-14</td>
+                                        <td><span class="badge badge-discharge">Recovered</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#P-1003</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://ui-avatars.com/api/?name=Michael+B&background=f59e0b&color=fff" 
+                                                     class="rounded-circle me-2" width="30" alt="Michael Brown">
+                                                Michael Brown
+                                            </div>
+                                        </td>
+                                        <td>58</td>
+                                        <td>Male</td>
+                                        <td>Neurology</td>
+                                        <td>2023-10-13</td>
+                                        <td><span class="badge badge-admission">Under Observation</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#P-1004</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://ui-avatars.com/api/?name=Emily+Johnson&background=a855f7&color=fff" 
+                                                     class="rounded-circle me-2" width="30" alt="Emily Johnson">
+                                                Emily Johnson
+                                            </div>
+                                        </td>
+                                        <td>29</td>
+                                        <td>Female</td>
+                                        <td>Orthopedics</td>
+                                        <td>2023-10-12</td>
+                                        <td><span class="badge badge-surgery">Post Surgery</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#P-1005</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://ui-avatars.com/api/?name=Robert+Wilson&background=ef4444&color=fff" 
+                                                     class="rounded-circle me-2" width="30" alt="Robert Wilson">
+                                                Robert Wilson
+                                            </div>
+                                        </td>
+                                        <td>67</td>
+                                        <td>Male</td>
+                                        <td>ICU</td>
+                                        <td>2023-10-12</td>
+                                        <td><span class="badge badge-emergency">Critical</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats Footer -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card border-0 bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 col-6 border-end">
+                                    <h4 class="fw-bold">24/7</h4>
+                                    <p class="text-muted mb-0">Emergency Service</p>
+                                </div>
+                                <div class="col-md-3 col-6 border-end">
+                                    <h4 class="fw-bold">98.2%</h4>
+                                    <p class="text-muted mb-0">Patient Satisfaction</p>
+                                </div>
+                                <div class="col-md-3 col-6 border-end">
+                                    <h4 class="fw-bold">15</h4>
+                                    <p class="text-muted mb-0">Operation Theaters</p>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <h4 class="fw-bold">120+</h4>
+                                    <p class="text-muted mb-0">Medical Staff</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
+    <!-- DataTables -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function() {
+            // Sidebar Toggle
+            $('#sidebarToggle').click(function() {
+                $('body').toggleClass('sidebar-collapsed');
+            });
+            
+            // Initialize DataTable
+            $('#patientsTable').DataTable({
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50],
+                "order": [[5, 'desc']],
+                "language": {
+                    "search": "Search patients:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ patients"
+                }
+            });
+            
+            // Initialize Calendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    {
+                        title: 'Dr. Smith - Surgery',
+                        start: new Date().toISOString().split('T')[0] + 'T09:00:00',
+                        end: new Date().toISOString().split('T')[0] + 'T11:00:00',
+                        color: '#ef4444'
+                    },
+                    {
+                        title: 'Staff Meeting',
+                        start: new Date().toISOString().split('T')[0] + 'T14:00:00',
+                        end: new Date().toISOString().split('T')[0] + 'T15:00:00',
+                        color: '#3b82f6'
+                    },
+                    {
+                        title: 'Patient Consultation',
+                        start: new Date().toISOString().split('T')[0] + 'T10:30:00',
+                        end: new Date().toISOString().split('T')[0] + 'T11:30:00',
+                        color: '#10b981'
+                    },
+                    {
+                        title: 'Medical Conference',
+                        start: '2023-10-20T09:00:00',
+                        end: '2023-10-22T17:00:00',
+                        color: '#8b5cf6'
+                    }
+                ],
+                eventClick: function(info) {
+                    alert('Event: ' + info.event.title + '\nStart: ' + info.event.start.toLocaleString());
+                }
+            });
+            calendar.render();
+            
+            // Department Distribution Chart
+            var departmentChartCtx = document.getElementById('departmentChart').getContext('2d');
+            var departmentChart = new Chart(departmentChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Cardiology', 'Neurology', 'Pediatrics', 'Orthopedics', 'General Surgery', 'ICU', 'Others'],
+                    datasets: [{
+                        data: [25, 18, 15, 12, 10, 8, 12],
+                        backgroundColor: [
+                            '#ef4444',
+                            '#3b82f6',
+                            '#f59e0b',
+                            '#a855f7',
+                            '#10b981',
+                            '#8b5cf6',
+                            '#6b7280'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Revenue Trend Chart
+            var revenueChartCtx = document.getElementById('revenueChart').getContext('2d');
+            var revenueChart = new Chart(revenueChartCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: [112000, 118500, 122000, 120500, 124580, 128000],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Revenue ($)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Chart Type Buttons
+            $('[data-chart-type]').click(function() {
+                var chartType = $(this).data('chart-type');
+                
+                // Update active button
+                $('[data-chart-type]').removeClass('active');
+                $(this).addClass('active');
+                
+                // Change chart type
+                departmentChart.config.type = chartType;
+                departmentChart.update();
+            });
+            
+            // Revenue Period Buttons
+            $('[data-revenue-period]').click(function() {
+                var period = $(this).data('revenue-period');
+                
+                // Update active button
+                $('[data-revenue-period]').removeClass('active');
+                $(this).addClass('active');
+                
+                // Update chart data based on period
+                if (period === 'monthly') {
+                    revenueChart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                    revenueChart.data.datasets[0].data = [112000, 118500, 122000, 120500, 124580, 128000];
+                    revenueChart.data.datasets[0].label = 'Monthly Revenue ($)';
+                } else if (period === 'quarterly') {
+                    revenueChart.data.labels = ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023'];
+                    revenueChart.data.datasets[0].data = [340000, 365000, 352000, 380000, 395000, 410000];
+                    revenueChart.data.datasets[0].label = 'Quarterly Revenue ($)';
+                }
+                
+                revenueChart.update();
+            });
+            
+            // Refresh Dashboard Button
+            $('#refreshDashboard').click(function() {
+                var $btn = $(this);
+                var originalText = $btn.html();
+                
+                $btn.prop('disabled', true);
+                $btn.html('<i class="fas fa-spinner fa-spin me-2"></i> Refreshing...');
+                
+                // Simulate API call
+                setTimeout(function() {
+                    // Update random stats
+                    var patients = Math.floor(Math.random() * 20) + 1240;
+                    var doctors = Math.floor(Math.random() * 5) + 84;
+                    var appointments = Math.floor(Math.random() * 10) + 38;
+                    var revenue = Math.floor(Math.random() * 5000) + 120000;
+                    var bedOccupancy = Math.floor(Math.random() * 10) + 70;
+                    var emergencyCases = Math.floor(Math.random() * 3) + 1;
+                    
+                    $('#totalPatients').text(patients.toLocaleString());
+                    $('#activeDoctors').text(doctors);
+                    $('#todayAppointments').text(appointments);
+                    $('#monthlyRevenue').text('$' + revenue.toLocaleString());
+                    $('#bedOccupancy').text(bedOccupancy + '%');
+                    $('#emergencyCases').text(emergencyCases);
+                    
+                    // Update department chart with random data
+                    var newData = [
+                        Math.floor(Math.random() * 10) + 20,
+                        Math.floor(Math.random() * 10) + 15,
+                        Math.floor(Math.random() * 10) + 12,
+                        Math.floor(Math.random() * 10) + 10,
+                        Math.floor(Math.random() * 10) + 8,
+                        Math.floor(Math.random() * 10) + 6,
+                        Math.floor(Math.random() * 10) + 10
+                    ];
+                    
+                    departmentChart.data.datasets[0].data = newData;
+                    departmentChart.update();
+                    
+                    // Update revenue chart with random data
+                    var revenueData = [
+                        Math.floor(Math.random() * 10000) + 110000,
+                        Math.floor(Math.random() * 10000) + 115000,
+                        Math.floor(Math.random() * 10000) + 120000,
+                        Math.floor(Math.random() * 10000) + 118000,
+                        Math.floor(Math.random() * 10000) + 122000,
+                        Math.floor(Math.random() * 10000) + 125000
+                    ];
+                    
+                    revenueChart.data.datasets[0].data = revenueData;
+                    revenueChart.update();
+                    
+                    // Show success message
+                    showToast('Dashboard refreshed successfully!', 'success');
+                    
+                    $btn.prop('disabled', false);
+                    $btn.html(originalText);
+                }, 1500);
+            });
+            
+            // Generate Report Button
+            $('#generateReport').click(function() {
+                showToast('Generating report... This may take a moment.', 'info');
+                
+                setTimeout(function() {
+                    showToast('Report generated successfully! Download will start shortly.', 'success');
+                    
+                    // Simulate download
+                    setTimeout(function() {
+                        var link = document.createElement('a');
+                        link.href = '#';
+                        link.download = 'hospital-report-' + new Date().toISOString().split('T')[0] + '.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, 1000);
+                }, 2000);
+            });
+            
+            // Notification dropdown
+            $('#notificationDropdown').click(function(e) {
+                e.preventDefault();
+            });
+            
+            // Search functionality
+            $('.search-box input').on('keyup', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                
+                if (searchTerm.length > 2) {
+                    // In a real app, you would make an AJAX call here
+                    console.log('Searching for:', searchTerm);
+                    
+                    // Filter patient table
+                    $('#patientsTable').DataTable().search(searchTerm).draw();
+                } else if (searchTerm.length === 0) {
+                    $('#patientsTable').DataTable().search('').draw();
+                }
+            });
+            
+            // Toast notification function
+            function showToast(message, type) {
+                var toastClass = 'bg-primary';
+                if (type === 'success') toastClass = 'bg-success';
+                if (type === 'error') toastClass = 'bg-danger';
+                if (type === 'warning') toastClass = 'bg-warning';
+                if (type === 'info') toastClass = 'bg-info';
+                
+                var iconClass = 'fas fa-info-circle';
+                if (type === 'success') iconClass = 'fas fa-check-circle';
+                if (type === 'error') iconClass = 'fas fa-exclamation-circle';
+                if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+                
+                var toastHTML = `
+                    <div class="toast align-items-center text-white ${toastClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="${iconClass} me-2"></i> ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                // Create and show toast
+                var $toast = $(toastHTML);
+                $('.toast-container').remove();
+                $('body').append('<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>');
+                $('.toast-container').append($toast);
+                
+                var toast = new bootstrap.Toast($toast[0]);
+                toast.show();
+                
+                // Remove after 5 seconds
+                setTimeout(function() {
+                    $toast.remove();
+                }, 5000);
+            }
+            
+            // Auto-update stats every 30 seconds
+            setInterval(function() {
+                // Randomly update appointment count
+                var currentApps = parseInt($('#todayAppointments').text());
+                var change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+                var newApps = Math.max(35, Math.min(50, currentApps + change));
+                $('#todayAppointments').text(newApps);
+                
+                // Update emergency cases randomly
+                var currentEmergency = parseInt($('#emergencyCases').text());
+                if (Math.random() > 0.7) { // 30% chance of change
+                    var emergencyChange = Math.floor(Math.random() * 2) - 1;
+                    var newEmergency = Math.max(0, Math.min(5, currentEmergency + emergencyChange));
+                    $('#emergencyCases').text(newEmergency);
+                }
+                
+                // Update time in navbar
+                updateDateTime();
+            }, 30000);
+            
+            // Update date and time
+            function updateDateTime() {
+                var now = new Date();
+                var options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                
+                // Update a hidden element or use for logging
+                console.log('Time updated:', now.toLocaleDateString('en-US', options));
+            }
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // View patient details
+            $('#patientsTable').on('click', '.btn-outline-primary', function() {
+                var patientName = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+                showToast('Viewing details for ' + patientName, 'info');
+            });
+            
+            // Doctor availability click
+            $('.doctor-availability').click(function() {
+                var doctorName = $(this).find('.fw-bold').text();
+                var status = $(this).find('.badge').text();
+                showToast('Dr. ' + doctorName.split(' ')[1] + ' is ' + status, 'info');
+            });
+        });
+    </script>
+</body>
+</html>

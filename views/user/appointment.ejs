@@ -1,0 +1,76 @@
+<%- include("navbar.ejs") %>
+
+ <h1 class="section-title center text-center mt-3">Make Appointment With Our Specialist</h1>
+
+<section class="appointment-section">
+    <div class="continer p-4">
+        <div class="row" >
+             <div class="col-lg-6">
+                    <h2 class="mb-4">Make An Appointment For Your Family</h2>
+                    <p class="mb-4">Schedule an appointment with our experienced healthcare professionals. We offer convenient online booking for all your family's medical needs.</p>
+                    
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title mb-4 text-dark">Book Appointment</h4>
+                            <form action="/user/save_appointment" method="post">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Full Name" required name="fullname">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="Email Address" required name="email">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="tel" class="form-control" placeholder="Phone Number" required name="mo_number">
+                                </div>
+                                 <div class="mb-3">
+                                    <select name="gender" class="form-select">
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" required name="department">
+                                        <option selected disabled>Select Speciality</option>
+                                        <option>Bariatric Surgery</option>
+                                        <option>Brest Care Center</option>
+                                        <option>Cardiac Surgery</option>
+                                        <option>Cardiology</option>
+                                        <option>Cest Medicine</option>
+                                        <option>Dental Care</option>
+                                        <option>Dermatology</option>
+                                        <option>ENT</option>
+                                        <option>Gastroenterology</option>
+                                        <option>Diabites</option>
+                                        <option>Neurology</option>
+                                        <option>Spain Surgery</option>
+                                        <option>Pain Clinic</option>
+                                        <option>Infectious Diseasess</option>
+                                        <option>Urology</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" required name="doctor">
+                                        <option selected disabled>Select Doctor</option>
+                                        <option>dr Anup Mistra</option>
+                                        <option>Neurology</option>
+                                        <option>Pediatrics</option>
+                                        <option>Orthopedics</option>
+                                        <option>Ophthalmology</option>
+                                        <option>Primary Care</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="date" class="form-control" required name="date">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Submit Appointment Request</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</section>
+<%- include("footer.ejs") %>

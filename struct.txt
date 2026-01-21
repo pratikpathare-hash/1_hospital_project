@@ -1,0 +1,6 @@
+doctor
+:-doctor_id,department_id,doctor_name,email,mobile_no,address,gender,profile_img,specialization,join_date,status(active/inactive,on_live),experience,degree,opd_charge,about
+
+
+departments:-
+    department_id,department_name,discription,department_icon,floor_no,created_at,updated_at

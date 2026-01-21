@@ -1,0 +1,135 @@
+<%- include("navbar.ejs") %>
+
+<div class="col-12">
+                <form action="/admin/register_doctor" method="post" >
+                <div style="background-color: #f9f9f9; padding: 25px; border-radius: 10px; margin-top: 20px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 20px;">Doctor Registration Form</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Full Name</label>
+                            <input type="text" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="Dr. Firstname Lastname" name="name">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Specialization</label>
+                             <select class="form-select" required name="specility" >
+                                        <option selected disabled>Select Speciality</option>
+                                        <option>Bariatric Surgery</option>
+                                        <option>Brest Care Center</option>
+                                        <option>Cardiac Surgery</option>
+                                        <option>Cardiology</option>
+                                        <option>Cest Medicine</option>
+                                        <option>Dental Care</option>
+                                        <option>Dermatology</option>
+                                        <option>ENT</option>
+                                        <option>Gastroenterology</option>
+                                        <option>Diabites</option>
+                                        <option>Neurology</option>
+                                        <option>Spain Surgery</option>
+                                        <option>Pain Clinic</option>
+                                        <option>Infectious Diseasess</option>
+                                        <option>Urology</option>
+                                    </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                       
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email Address</label>
+                            <input type="email" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="doctor@hospital.com" name="email">
+                        </div>
+                        <div>
+                             <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mobile No</label>
+                            <input type="mobile" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="+91 1234567890" name="mo_number">
+                            
+                        </div>
+                    </div>
+
+
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                       
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Experience Year</label>
+                            <input type="number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="Experience Year(in year)" name="experience">
+                        </div>
+                         <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Gender</label>
+                             <select style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" name="gender" required>
+                                <option value="">Gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                                
+                            </select>
+                        </div>
+                       
+                    </div>
+
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                      
+                    
+                          <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Consultation Type</label>
+                             <select style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" name="co_type" required>
+                                <option  value="" >Select consultant type</option>
+                                <option value="opd">OPD</option>
+                                <option value="online">Online</option>
+                                <option value="emergency">Emergency</option>
+                                
+                                
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">OPT Fees(in ₹)</label>
+                            <input type="number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="₹2100" name="opd_fee">
+                            
+                        </div>
+                    </div>
+                    
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                       
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Profile Photo</label>
+                            <input type="file" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" name="photo">
+                             
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+
+                    
+                          <div style="margin-bottom: 25px;">
+                               <label style="display: block; margin-bottom: 8px; font-weight: 600;">Address</label>
+                               <textarea style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; height: 90px;" placeholder="add addres here" name="address"></textarea>
+                          </div>
+                          <div style="margin-bottom: 25px;">
+                              <label style="display: block; margin-bottom: 8px; font-weight: 600;">About Doctor</label>
+                              <textarea style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; height: 90px;" placeholder="add addres here" name="about"></textarea>
+
+                          </div>
+
+                      </div>    
+
+
+
+                    
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Qualifications</label>
+                        <textarea style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; height: 100px;" placeholder="MD, MBBS, PhD, etc." name="qualifications"></textarea>
+                    </div>
+                    
+                    <button style="background-color: #3c97ff; color: white; border: none; padding: 14px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                        <i class="fas fa-user-plus" style="margin-right: 10px;"></i> Register Doctor
+                    </button>
+                </div>
+                </form>
+</div>
+
+
+<%- include("footer.ejs") %>
+        
+
+    
